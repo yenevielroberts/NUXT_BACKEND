@@ -1,0 +1,28 @@
+##
+
+GET http://localhost:3000/galaxias/get
+
+###
+
+POST http://localhost:3000/galaxia/post
+
+    {
+        "nombre": "Irie",
+        "num_planetas": 7,
+        "curiosidades": "Greeny and bluish",
+        "tipo": "Friendly"
+    }
+
+### 
+DELETE http://localhost:3000/galaxia/2
+
+
+### 
+PUT http://localhost:3000/galaxia/1
+
+    {
+        "nombre": "Yeneviel",
+        "num_planetas": 7,
+        "curiosidades": "Greeny and bluish",
+        "tipo": "Friendly"
+    }
