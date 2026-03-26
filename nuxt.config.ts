@@ -1,46 +1,30 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2024-11-01",
+  compatibilityDate: '2024-11-01',
   future: {
     compatibilityVersion: 4,
   },
   devtools: { enabled: true },
-  //css:["tailwindcss","@nuxt/ui"],
+  // css: ["tailwindcss", "@nuxt/ui"],
   modules: ["@nuxt/eslint", "@nuxt/ui", "nuxt-auth-utils"],
-nitro: {
-  routeRules: {
-    '/api/**': {
-      cors: {
-        origin: [
-          'https://tu-app-frontend.com',
-          'http://localhost:9000',
-          'capacitor://localhost',
-        ],
-        credentials: true,
+  nitro: {
+    routeRules: {
+      '/api/**': {
+        // CORS will be handled by server/middleware/cors.ts instead of Nitro's automatic handler
       },
     },
-       '/routes/auth/**': {
-      cors: {
-        origin: [
-          'https://tu-app-frontend.com',
-          'http://localhost:9000',
-          'capacitor://localhost',
-        ],
-        credentials: true,
-      },
-    },
-  }
-},
+  },
   runtimeConfig: {
+    public: {
+      // Origin allowed to make requests from the Quasar frontend (can be comma-separated list)
+      corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:8080',
+    },
     oauth: {
       // provider in lowercase (github, google, etc.)
-      // Deixem clientId i clientSecret a cadena buida, pero d'on vindran els valors de les variables d'entorn?
-      // dins la nostra conta de github
       github: {
-        clientId: "",
-        clientSecret: ""
-      }
-    }
+        clientId: process.env.NUXT_OAUTH_GITHUB_CLIENT_ID || '',
+        clientSecret: process.env.NUXT_OAUTH_GITHUB_CLIENT_SECRET || '',
+      },
+    },
   },
-
-});
+})
