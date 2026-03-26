@@ -9,15 +9,26 @@ export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/ui", "nuxt-auth-utils"],
 nitro: {
   routeRules: {
-    '/**': {// Afegeix les capçaleres CORS a totes les rutes
-      cors: true,
-      headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:9000',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept'
-      }
-    }
+    '/api/**': {
+      cors: {
+        origin: [
+          'https://tu-app-frontend.com',
+          'http://localhost:9000',
+          'capacitor://localhost',
+        ],
+        credentials: true,
+      },
+    },
+       '/routes/auth/**': {
+      cors: {
+        origin: [
+          'https://tu-app-frontend.com',
+          'http://localhost:9000',
+          'capacitor://localhost',
+        ],
+        credentials: true,
+      },
+    },
   }
 },
   runtimeConfig: {
