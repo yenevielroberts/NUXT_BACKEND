@@ -1,4 +1,4 @@
-import {deletePlaneta} from '../../api/planetas'
+import {deletePlaneta} from '../planetas'
 
 //Handler de la peticion DELETE
 //DELETE planetas/id

@@ -1,4 +1,4 @@
-import {deleteGalaxia} from '../../api/galaxias'
+import {deleteGalaxia} from '../galaxias'
 
 //Handler de la peticion DELETE
 //DELETE galaxia/id

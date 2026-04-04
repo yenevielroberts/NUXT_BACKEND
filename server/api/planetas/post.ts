@@ -1,4 +1,4 @@
-import {insertPlaneta} from '../../api/planetas'
+import {insertPlaneta} from '../planetas'
 
 //Handler de la peticion PUT
 //POST planetas/post

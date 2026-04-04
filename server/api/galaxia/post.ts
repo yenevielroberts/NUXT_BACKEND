@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { insertGalaxiasForUser } from '../../api/galaxias'
+import { insertGalaxiasForUser } from '../galaxias'
 import * as schema from '../../db/schema'
 
 // Handler POST para crear una galaxia asociada a un usuario autenticado.

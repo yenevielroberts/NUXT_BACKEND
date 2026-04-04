@@ -1,4 +1,4 @@
-import {updatePlanetas} from '../../api/planetas'
+import {updatePlanetas} from '../planetas'
 
 //Handler de la peticion PUT
 //PUT planetas/id

@@ -1,4 +1,4 @@
-import { GalaxiaById } from '../../api/galaxias'
+import { GalaxiaById } from '../galaxias'
 import * as schema from '../../db/schema'
 import { eq } from 'drizzle-orm'
 

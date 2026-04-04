@@ -1,4 +1,4 @@
-import {updateGalaxia} from '../../api/galaxias'
+import {updateGalaxia} from '../galaxias'
 
 //Handler de la peticion PUT
 //PUT galaxia/id
