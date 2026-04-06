@@ -8,20 +8,12 @@ import { getAuthenticatedUser } from '~~/server/utils/auth'
 //GET galaxia/get
 export default defineEventHandler(async(event) =>{
 
-//console.log("Cookie Header:", getHeader(event, 'cookie'))
-/*const headers = getHeaders(event)
-  console.log('Headers que llegan al servidor:', headers.authorization)*/
   //1) Obtengo la sesión y datos del usuario logeado 
   const sessionUser = await getAuthenticatedUser(event)
-
-
-  // Log de depuración: fundamental para saber qué está llegando realmente
-  //console.log("Datos de sesión recuperados:", sessionUser);
 
   // 2) Extraemos el ID (ya sea del token o de la cookie)
   let userId = sessionUser?.id ? Number(sessionUser.id) : null
 
-  // 3) Si la sesión no trae id, busco el usuario en BD por email o login.
 // 3) Si la sesión no trae id, busco el usuario en BD por email o login.
   if (!userId) {
     const userEmail = sessionUser?.email;
