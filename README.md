@@ -125,4 +125,7 @@ npx drizzle-kit studio
 | `/planetas/NewPlaneta` | Crear nuevo planeta |
 
 
+npx nuxi dev --host 0.0.0.0 --port 3000
+
+¿Por qué 0.0.0.0? Porque le dice a Windows que acepte conexiones de cualquier sitio (incluido el emulador 10.0.2.2).
 

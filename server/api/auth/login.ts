@@ -1,42 +1,53 @@
 import { eq } from "drizzle-orm"
 import * as schema from '../../db/schema'
+// Importa una librería para JWT (ejemplo: jose o jsonwebtoken)
+import jwt from 'jsonwebtoken' 
 
 export default defineEventHandler(async (event) => {
-
-  //1 Accedo a los campos del formulario
   const { email, password } = await readBody(event)
+  const config = useRuntimeConfig()
 
-  //comprueba si la información esta email y password
   if (!email || !password) {
     throw createError({ statusCode: 400, statusMessage: "Faltan campos por introducir" })
   }
 
-  //consulta a la base de datos para comprobar que existe
-  const correctLogin = await useDb().query.users.findFirst({
+  const user = await useDb().query.users.findFirst({
     where: eq(schema.users.email, email)
   })
 
-  if (!correctLogin) {
-    throw createError({ statusCode: 400, statusMessage: "El email o password es incorrecta" })
+  if (!user || !user.password) {
+    throw createError({ statusCode: 400, statusMessage: "Credenciales inválidas" })
   }
 
-
-  if (!correctLogin.password) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid password github' })
-  }
-
-  //funcionalidad de Nust auth verifyPassword
-  const isValid = await verifyPassword(correctLogin.password, password)
-
+  const isValid = await verifyPassword(user.password, password)
   if (!isValid) {
     throw createError({ statusCode: 400, statusMessage: 'Password incorrect!' })
   }
 
-  const { password: repassword, ...userWithouthPassword } = correctLogin
+  const { password: _, ...userWithoutPassword } = user
 
-  await setUserSession(event, {user: userWithouthPassword})
+  // --- ESTRATEGIA HÍBRIDA ---
 
-  return userWithouthPassword
+ // 1. Sesión de Nuxt (Para Web/Cookies)
+  await setUserSession(event, { 
+    user: {
+      id: String(userWithoutPassword.id),
+      name: userWithoutPassword.name, // Ajusta a tus campos de DB
+      login: userWithoutPassword.email
+    }
+  })
 
+  // 2. Generar JWT (Para Móvil/Headers)
+  // Usa una clave secreta desde tu .env
+  const token = jwt.sign(
+    { id: userWithoutPassword.id, email: userWithoutPassword.email },
+    process.env.JWT_SECRET || 'clave_secreta_provisional',
+    { expiresIn: '30d' }
+  )
 
+  // 3. Retornamos ambos
+  return {
+    user: userWithoutPassword,
+    token: token 
+  }
 });

@@ -1,6 +1,7 @@
 import { getGalaxiasByUserId } from '../galaxias'
 import * as schema from '../../db/schema'
 import { eq } from 'drizzle-orm'
+import { getAuthenticatedUser } from '~~/server/utils/auth'
 
 
 //Handle GET para obtener todas las galaxias de un usuario
@@ -8,37 +9,46 @@ import { eq } from 'drizzle-orm'
 export default defineEventHandler(async(event) =>{
 
 //console.log("Cookie Header:", getHeader(event, 'cookie'))
-
+const headers = getHeaders(event)
+  console.log('Headers que llegan al servidor:', headers.authorization)
   //1) Obtengo la sesión y datos del usuario logeado 
-  const session = await getUserSession(event)
-  const sessionUser = session.user as { id?: number | string, login?: string, email?: string } | undefined
+  const sessionUser = await getAuthenticatedUser(event)
 
 
   // Log de depuración: fundamental para saber qué está llegando realmente
   //console.log("Datos de sesión recuperados:", sessionUser);
 
-  let userId = Number(sessionUser?.id)// 2)Obtengo el id del usuario 
+  // 2) Extraemos el ID (ya sea del token o de la cookie)
+  let userId = sessionUser?.id ? Number(sessionUser.id) : null
 
   // 3) Si la sesión no trae id, busco el usuario en BD por email o login.
-  if (!userId &&(sessionUser?.login || sessionUser?.email)) {
-    const userFromDb = await useDb().query.users.findFirst({
-      where: sessionUser?.email
-        ? eq(schema.users.email, sessionUser.email)
-        : eq(schema.users.login, sessionUser!.login as string)
-    })
+// 3) Si la sesión no trae id, busco el usuario en BD por email o login.
+  if (!userId) {
+    const userEmail = sessionUser?.email;
+    const userLogin = sessionUser?.login;
 
-    if (userFromDb) {
-      userId = Number(userFromDb.id)//Solo convierto a numero si existe
+    // Solo entramos si alguno de los dos existe
+    if (userEmail || userLogin) {
+      const userFromDb = await useDb().query.users.findFirst({
+        where: userEmail 
+          ? eq(schema.users.email, userEmail) 
+          : eq(schema.users.login, userLogin as string) // Forzamos que aquí ya no es undefined
+      })
+      
+      if (userFromDb) {
+        userId = Number(userFromDb.id)
+      }
     }
   }
 
     // 4) Si no se puedo identificar el usuario, se bloquea el insert.
-  if (userId ===null || isNaN(userId)) {
-    throw createError({ statusCode: 401, statusMessage: 'Usuario no autenticado o no encontrado en BD' })
+ if (!userId || isNaN(userId)) {
+    throw createError({ 
+      statusCode: 401, 
+      statusMessage: 'Usuario no autenticado (Cookie/Token no encontrados)' 
+    })
   }
   //5) Obtengo los datos de las galaxias
-  const galaxias = await getGalaxiasByUserId(userId)
-
-  return galaxias
+  return await getGalaxiasByUserId(userId)
   
 })

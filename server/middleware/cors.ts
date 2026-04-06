@@ -10,14 +10,25 @@ export default defineEventHandler(async (event) => {
   const allowed = (process.env.CORS_ORIGIN || 'http://localhost:8080').split(',').map(o => o.trim())
   const devAllowAll = process.env.NODE_ENV === 'development' || process.env.ALLOW_ALL_CORS === 'true'
 
-  const allowOrigin = (() => {
-    if (!origin) return undefined
-    if (devAllowAll) return origin
-    if (allowed.length === 0) return origin
-    if (allowed.includes('*')) return origin
-    if (allowed.includes(origin)) return origin
-    return undefined
-  })()
+const allowOrigin = (() => {
+  // 1. Si no hay origin (pasa mucho en peticiones directas de Android/iOS)
+  if (!origin) return devAllowAll ? '*' : undefined 
+  
+  // 2. Desarrollo total
+  if (devAllowAll) return origin
+  
+  // 3. Tu lógica de lista blanca
+  if (allowed.includes('*')) return origin
+  if (allowed.includes(origin)) return origin
+  
+  // --- EL FIX PARA CAPACITOR ---
+  // Capacitor en Android suele enviar 'http://localhost'
+  // Capacitor en iOS suele enviar 'capacitor://localhost'
+  const capacitorOrigins = ['http://localhost', 'capacitor://localhost']
+  if (capacitorOrigins.includes(origin)) return origin 
+  
+  return undefined
+})()
 
   if (!allowOrigin) {
     // Origin not allowed — reject preflight or request

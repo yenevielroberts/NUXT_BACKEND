@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Origin allowed to make requests from the Quasar frontend (can be comma-separated list)
-      corsOrigin: process.env.CORS_ORIGIN || 'https://localhost:8080',
+      corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:8080',
       // Base URL pública que deben usar frontends (Quasar/Nuxt) y apps móviles
       apiBase: process.env.API_BASE || process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000',
     },
