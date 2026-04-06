@@ -9,8 +9,8 @@ import { getAuthenticatedUser } from '~~/server/utils/auth'
 export default defineEventHandler(async(event) =>{
 
 //console.log("Cookie Header:", getHeader(event, 'cookie'))
-const headers = getHeaders(event)
-  console.log('Headers que llegan al servidor:', headers.authorization)
+/*const headers = getHeaders(event)
+  console.log('Headers que llegan al servidor:', headers.authorization)*/
   //1) Obtengo la sesión y datos del usuario logeado 
   const sessionUser = await getAuthenticatedUser(event)
 
